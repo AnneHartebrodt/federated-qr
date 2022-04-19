@@ -2,12 +2,15 @@ require(data.table)
 
 
 ## Diabetes data
+# load the data and extract the relevant rows
 diabetes<-fread('../data/diabetes/diabetes.tsv')
 diabetes<-diabetes[0:(nrow(diabetes)-20),]
 
+# load the class lables
 lables <-fread('../data/diabetes/diabetes_lab.tsv')
 lables<-lables[0:(nrow(diabetes))]$V1
 
+# set up the linear regression in R and extract the relevant coefficients
 f<-formula(lables~(-1)+.)
 model<-lm(f, data = diabetes)
 su<-summary(model)
@@ -15,8 +18,10 @@ coeff.diabetes<-model$coefficients
 rsquared.diabetes<-su$r.squared
 pvals.diabetes<-su$coefficients[,4]
 
+# load the result from the python simulation
 pyres<-fread('../results/diabetes.txt', fill=T)
 
+# verify that the results are equal.
 sum(pyres[1, 2:ncol(pyres)]-coeff.diabetes)
 sum(pyres[2,2]-rsquared.diabetes)
 sum(pyres[3,2:ncol(pyres)]-pvals.diabetes)
