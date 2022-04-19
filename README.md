@@ -3,6 +3,6 @@ Simulation code for federated Gram-Schmidt QR decomposition and linear regressio
 
 ## folders
 
-* [data](https://github.com/AnneHartebrodt/federated-qr/data) contains the data used to test the scripts
-* [qr](https://github.com/AnneHartebrodt/federated-qr/qr) contains the simulation code for federated QR decomposition, linear regression and
-* [results](https://github.com/AnneHartebrodt/federated-qr/results) contains the linear regression results (coefficients, etc.)
+* [data](https://github.com/AnneHartebrodt/federated-qr/tree/master/data) contains the data used to test the scripts
+* [qr](https://github.com/AnneHartebrodt/federated-qr/tree/master/qr) contains the simulation code for federated QR decomposition, linear regression and
+* [results](https://github.com/AnneHartebrodt/federated-qr/tree/master/results) contains the linear regression results (coefficients, etc.)
