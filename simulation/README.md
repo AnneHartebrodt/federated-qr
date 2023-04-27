@@ -41,8 +41,8 @@ The following command launches one of three clients.
  
  The two other clients can be started in different terminals with the analougous call. Once all clients have connected the simulation will start automatically.
  ```
- python ../qr/src/smpc_fed_qr.py -M3 -I1 -k simulation_data/data/1/random.tsv -o simulation_data/results/1 -p data.tsv
- python ../qr/src/smpc_fed_qr.py -M3 -I2 -k simulation_data/data/2/random.tsv -o simulation_data/results/2 -p data.tsv
+ python ../qr/src/smpc_fed_qr.py -M3 -I1 -k simulation_data/data/1/random.tsv -o simulation_data/results/1 -p output
+ python ../qr/src/smpc_fed_qr.py -M3 -I2 -k simulation_data/data/2/random.tsv -o simulation_data/results/2 -p output
  ```
  
  ### Verify the correctness of the result
