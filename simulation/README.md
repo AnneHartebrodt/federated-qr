@@ -36,7 +36,7 @@ The following command launches one of three clients.
 ```-p``` is the name of the output file.
  
  ```
- python ../qr/src/smpc_fed_qr.py -M3 -I0 -k simulation_data/data/0/random.tsv -o simulation_data/results/0 -p data.tsv
+ python ../qr/src/smpc_fed_qr.py -M3 -I0 -k simulation_data/data/0/random.tsv -o simulation_data/results/0 -p output
  ```
  
  The two other clients can be started in different terminals with the analougous call. Once all clients have connected the simulation will start automatically.
@@ -51,3 +51,9 @@ The following command launches one of three clients.
  ```
  ../qr/src/verify_output.py -q output_Q.tsv -d simulation_data/ -s 3 -f data.tsv -r output_R.tsv
  ```
+
+### Convenience script
+You can also call the microbenchmark by calling 
+```
+bash microbenchmark_stats.sh
+```
