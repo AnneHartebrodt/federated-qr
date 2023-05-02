@@ -23,22 +23,20 @@ import functools
 import scipy.linalg as la
 from docopt import docopt
 import argparse
+import pandas as pd
+import os.path as op
 
-async def secure_qr():
 
-    clients = mpc.parties
-    
-    print(clients)
-    bit_length = 0
+async def secure_qr(local_data):
+
     secfxp = mpc.SecFxp(64)
 
 
     ortho = []
     np.random.seed(12)
 
-    local_data  = sh.generate_random_gaussian(250, 10)
-
     se = np.dot(local_data[:, 0], local_data[:,0])
+    print(se)
     se = secfxp(se)
     sum = mpc.sum(mpc.input(se))
     
@@ -63,21 +61,14 @@ async def secure_qr():
     # i = number of column vectors
     print('Local residuals')
     for i in range(1, local_data.shape[1]):
+        print('Norm')
         print(norms[i-1])
         glist.append(ap / np.sqrt(norms[i-1]))
-        print(i)
         for j in range(i):
-            print(j)
             ind = i-1
-            print(ind)
             rij = np.dot(local_data[:, ind], glist[j])
             r[j, ind] = rij
         
-        
-        #r = secfxp.array(r)
-        # conorms we want to calculate
-        sums = []
-
 
         print('Compute conorm ')
         ses = []
@@ -86,31 +77,25 @@ async def secure_qr():
             o = ortho[di]
             # eigenvector norms
             nn = norms[di]
-            n = nn + 1e-16
-
-            sum = 0
-            # iterate over the local data sets
-            # combined with the local eigenvector snippets
-            # o takes all othonormal ranks
-            # i is the currently to be orthonomalised rank
-        
-            d = local_data
-            o1 = o
+            n = nn #+ 1e-16
             # Compute conorm
-            se = np.dot(o1, d[:, i]) / n
+            se = np.dot(o, local_data[:, i]) / n
+            print(se)
             ses.append(se)
         
         
+        print('Input conorms')
         print(ses)
         ses = np.array(ses)
-        print(ses.dtype)
-        ses = secfxp.array(ses)
+#        ses = secfxp.array(ses)
 
         # Decode sum and store for future reference.
         # print('Done')
-        sums = await mpc.output(ses)
+        inp = mpc.input(list(map(secfxp, ses)))
+        sums = functools.reduce(mpc.vector_add, inp)
+        sums = await mpc.output(sums)
         #sums  =  await mpc.output(sums)
-
+        print('Output conroms')
         print(sums)
 
          # init norm of the current vector
@@ -124,17 +109,19 @@ async def secure_qr():
         # compute the local norm of the freshly orthogonalised
         # eigenvector snippet
         se = np.dot(ap, ap)
-
+        print(se)
+        print(type(se))
+        
         se = secfxp(se)
         sum = mpc.sum(mpc.input(se))
-    
-
-        # Decode sum and store for future reference.
-        print('Norm')
         s  = await mpc.output(sum)
-
-        norms.append(s+1e-15)
+        print(s)
+        print(type(s))
+        norms.append(s)
         ortho.append(ap)
+
+
+   
 
     i = local_data.shape[1]
     ind = i - 1
@@ -150,8 +137,16 @@ async def secure_qr():
         # norms are still squared
         G_list.append(ortho[i] / np.sqrt(norms[i]))
 
+    r = np.array(r)
+    print(r)
+    inp = mpc.input(list(map(secfxp, r.flatten())))
+    r = functools.reduce(mpc.vector_add, inp)
+    r = await mpc.output(r)
+    print(r)
+    rd = int(np.sqrt(len(r)))
+    r = np.reshape(r, (rd,rd))
     # just for convenience stack the data
-
+    print(r)
     #r = computeR(local_data, G_list)
     return ortho, G_list, r, rl, local_data
 
@@ -162,28 +157,29 @@ async def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-k', '--file', type=str, help=('file'))
     parser.add_argument('-o', '--output_dir', help='output folder')
-    parser.add_argument('-p', '--output_file', help='output file')
+    parser.add_argument('-p', '--output_file_prefix', help='output file')
 
     args = parser.parse_args()
     print(args)
 
     await mpc.start()
 
-    ortho, G_list, r, rl, local_data = await secure_qr()
+    data = pd.read_csv(args.file, sep='\t', header=None).values
+
+    print(data)
+    ortho, G_list, r, rl, local_data = await secure_qr(data)
     #print(ortho)
     print(r)
     await mpc.shutdown()
 
-    import pandas as pd
-    import os.path as op
-    pd.DataFrame(local_data).to_csv(op.join(args.output_dir, args.output_file))
 
-
-    q, r2 = la.qr(local_data, mode='economic')
-    print(np.linalg.norm(np.abs(r)-np.abs(r2)))
+    pd.DataFrame(G_list).to_csv(op.join(args.output_dir, args.output_file_prefix+'_Q.tsv'), header=False, index=False, sep='\t')
+    pd.DataFrame(r).to_csv(op.join(args.output_dir, args.output_file_prefix+'_R.tsv'), header=False, index=False, sep='\t')
 
 
 
 if __name__ == '__main__':
 
     mpc.run(main())
+
+
