@@ -51,3 +51,8 @@ The following command launches one of three clients.
  ```
  ../qr/src/verify_output.py -q output_Q.tsv -d simulation_data/ -s 3 -f data.tsv -r output_R.tsv
  ```
+
+You can also call run the whole simulation by calling
+```
+bash run_microbenchmark.sg
+```
