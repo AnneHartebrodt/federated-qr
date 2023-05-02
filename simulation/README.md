@@ -48,4 +48,6 @@ The following command launches one of three clients.
  ### Verify the correctness of the result
  In order to convince ourselves that the smpc version achieves reasonable accuracy, we compare the results, which we previously saved with the centralized implementaion of QR orthonormalisation.
 
- 
+ ```
+ ../qr/src/verify_output.py -q output_Q.tsv -d simulation_data/ -s 3 -f data.tsv -r output_R.tsv
+ ```
