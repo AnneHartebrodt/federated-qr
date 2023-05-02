@@ -53,7 +53,7 @@ The following command launches one of three clients.
  ```
 
 ### Convenience script
-You can also call run the whole simulation by calling
+You can also call the microbenchmark by calling 
 ```
-bash run_microbenchmark.sh
+bash microbenchmark_stats.sh
 ```
