@@ -55,5 +55,5 @@ The following command launches one of three clients.
 ### Convenience script
 You can also call run the whole simulation by calling
 ```
-bash run_microbenchmark.sg
+bash run_microbenchmark.sh
 ```
